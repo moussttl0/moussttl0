@@ -91,7 +91,7 @@ async function showForecast(location, id) {
   const params = {
     latitude: location.latitude,
     longitude: location.longitude,
-    hourly: "wave_height,wave_direction,swell_wave_height,swell_wave_period,sea_surface_temperature",
+    hourly: "wave_height,wave_direction,swell_wave_height,swell_wave_period,sea_surface_temperature,sea_level_height_msl",
     daily: "wave_height_max",
     timezone: "auto",
     forecast_days: "3"
@@ -140,6 +140,7 @@ function renderForecast(location, marine, wind) {
   const swell = marine.hourly.swell_wave_height?.[currentIndex];
   const swellPeriod = marine.hourly.swell_wave_period?.[currentIndex];
   const seaTemp = marine.hourly.sea_surface_temperature?.[currentIndex];
+  const seaLevel = marine.hourly.sea_level_height_msl;
   const windSpeed = windIndex >= 0 ? wind.hourly.wind_speed_10m?.[windIndex] : null;
   const windDirection = windIndex >= 0 ? wind.hourly.wind_direction_10m?.[windIndex] : null;
   const place = [location.name, location.admin1, location.country].filter(Boolean).filter((value, index, values) => values.indexOf(value) === index).join(", ");
@@ -174,9 +175,55 @@ function renderForecast(location, marine, wind) {
         ${statRow("water", "Température de la mer", formatNumber(seaTemp), "°C", "Température de surface")}
       </section>
     </div>
+    ${buildTideSection(hours, seaLevel, currentIndex)}
     <div class="forecast-title"><h3>Les prochains jours</h3><span>Hauteur maximale des vagues</span></div>
     <div class="forecast-grid">${buildDailyForecast(marine, wind)}</div>
   `;
+}
+
+function buildTideSection(times, levels, currentIndex) {
+  const values = levels?.map((value) => value == null ? null : Number(value));
+  const validLevels = values?.filter((value) => value !== null && Number.isFinite(value)) ?? [];
+  if (!validLevels.length) {
+    return `<section class="tide-panel panel" aria-labelledby="tide-title">
+      <div class="tide-heading"><div><p class="weather-kicker">NIVEAU MARIN</p><h3 id="tide-title">Marées</h3></div></div>
+      <p class="tide-unavailable">Aucune prévision de marée n’est disponible pour ce lieu. Essayez un port ou une ville côtière.</p>
+    </section>`;
+  }
+
+  const events = [];
+  for (let index = Math.max(1, currentIndex + 1); index < Math.min(values.length - 1, times.length - 1); index++) {
+    const previous = values[index - 1];
+    const current = values[index];
+    const next = values[index + 1];
+    if (previous == null || current == null || next == null) continue;
+    if (current > previous && current > next) events.push({ index, type: "high" });
+    if (current < previous && current < next) events.push({ index, type: "low" });
+  }
+
+  const nextEvents = events.slice(0, 6);
+  const eventList = nextEvents.length
+    ? nextEvents.map(({ index, type }) => {
+      const date = new Intl.DateTimeFormat("fr-FR", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" })
+        .format(new Date(`${times[index].slice(0, 10)}T12:00:00Z`));
+      const label = type === "high" ? "Pleine mer" : "Basse mer";
+      return `<li class="tide-event tide-${type}">
+        <span class="tide-event-icon" aria-hidden="true">${type === "high" ? "↑" : "↓"}</span>
+        <span class="tide-event-name">${label}<small>${escapeHtml(date)}</small></span>
+        <time datetime="${escapeHtml(times[index])}">${escapeHtml(times[index].slice(11, 16))}</time>
+        <strong>${formatNumber(values[index])} <small>m</small></strong>
+      </li>`;
+    }).join("")
+    : '<li class="tide-unavailable">Pas de marée haute ou basse identifiable dans les prochaines heures.</li>';
+
+  return `<section class="tide-panel panel" aria-labelledby="tide-title">
+    <div class="tide-heading">
+      <div><p class="weather-kicker">PRÉVISIONS SUR 3 JOURS</p><h3 id="tide-title">Prochaines marées</h3></div>
+      <div class="tide-current"><span>Niveau marin actuel prévu</span><strong>${formatNumber(values[currentIndex])} <small>m MSL</small></strong></div>
+    </div>
+    <ol class="tide-events">${eventList}</ol>
+    <p class="tide-disclaimer">Horaires estimés à l’heure. Hauteurs indicatives par rapport au niveau moyen de la mer (MSL), et non au zéro des cartes marines.</p>
+  </section>`;
 }
 
 function buildChart(times, values) {
