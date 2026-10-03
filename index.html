@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#071a2c">
+    <meta name="description" content="Consultez les conditions et prévisions météo marines de votre prochain port d'escale.">
+    <title>Horizon — Météo marine</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3 18c3 0 3-3 6-3s3 3 6 3 3-3 6-3 3 3 6 3M3 24c3 0 3-3 6-3s3 3 6 3 3-3 6-3 3 3 6 3M16 4v8m-4-4 4-4 4 4' fill='none' stroke='%235de0d0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="Horizon, accueil">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <path d="M4 19.5c3.2 0 3.2-3 6.4-3s3.2 3 6.4 3 3.2-3 6.4-3 3.2 3 6.4 3M4 25c3.2 0 3.2-3 6.4-3s3.2 3 6.4 3 3.2-3 6.4-3 3.2 3 6.4 3M16 4v8m-4-4 4-4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="brand-name">horizon<span>.</span></span>
+        </a>
+        <div class="topbar-note"><span class="status-dot"></span> Prévisions marines en direct</div>
+      </header>
+
+      <main>
+        <section class="hero" aria-labelledby="page-title">
+          <div class="hero-copy">
+            <p class="eyebrow"><span></span> LA MER, EN UN COUP D’ŒIL</p>
+            <h1 id="page-title">Prenez le large<br>en <span>toute confiance.</span></h1>
+            <p class="hero-description">Les conditions marines de votre prochaine escale, simplement.</p>
+          </div>
+
+          <form class="search-form" id="search-form">
+            <label for="location-input">Où souhaitez-vous naviguer ?</label>
+            <div class="search-row">
+              <div class="input-wrap">
+                <svg aria-hidden="true" viewBox="0 0 24 24" fill="none">
+                  <path d="M20 10.2c0 5.1-8 11-8 11s-8-5.9-8-11a8 8 0 1 1 16 0Z" stroke="currentColor" stroke-width="1.7"/>
+                  <circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.7"/>
+                </svg>
+                <input id="location-input" name="location" type="search" placeholder="Ex. Marseille, Biarritz, Ajaccio…" autocomplete="off" required>
+              </div>
+              <button class="search-button" type="submit">
+                <span>Voir la météo</span>
+                <svg aria-hidden="true" viewBox="0 0 20 20" fill="none"><path d="M4 10h12m-5-5 5 5-5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+            <p class="form-hint">Recherchez une ville, un port ou une île.</p>
+            <div class="search-results" id="search-results" role="listbox" aria-label="Lieux correspondants" hidden></div>
+          </form>
+        </section>
+
+        <section class="weather-section" id="weather-section" aria-live="polite" aria-atomic="false" hidden>
+          <div id="weather-content"></div>
+        </section>
+
+        <section class="welcome-card" id="welcome-card">
+          <div class="welcome-icon" aria-hidden="true">
+            <svg viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27" stroke="currentColor" stroke-opacity=".22"/><path d="M10 31c4.5 0 4.5-4 9-4s4.5 4 9 4 4.5-4 9-4 4.5 4 9 4m-36 8c4.5 0 4.5-4 9-4s4.5 4 9 4 4.5-4 9-4 4.5 4 9 4M28 11v9m-4.5-4.5L28 11l4.5 4.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div>
+            <h2>Votre prochaine escale commence ici.</h2>
+            <p>Entrez un lieu pour découvrir les vagues, les marées, le vent et les prévisions des trois prochains jours.</p>
+          </div>
+          <span class="welcome-decoration" aria-hidden="true">≈</span>
+        </section>
+      </main>
+
+      <footer class="footer">
+        <span>Horizon <span class="footer-separator">·</span> La mer, mieux préparée.</span>
+        <span>Données météo par <a href="https://open-meteo.com/" target="_blank" rel="noreferrer">Open-Meteo</a></span>
+      </footer>
+    </div>
+  </body>
+</html>
